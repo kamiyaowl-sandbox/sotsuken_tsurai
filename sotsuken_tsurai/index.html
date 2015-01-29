@@ -1,40 +1,104 @@
-﻿<!DOCTYPE html>
+﻿<!--
 
+　 　 　 　 　 lllllllll'
+　,,,,,,,,,,,,,,,,,,,,,,,lllllllll,,,,,,,,,,,,,,,,,,,,,,,, 　　 lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+　llllllllllllllllllllllllllllllllllllllllllllllllllllllll　　　''''''''llllllll'''''''''''''''''lllllllll''''llllllll''''''
+　　　　,llllllll''　　　,,llllllll'　　　　　　　　,llllllll' 　 　 　 llllllll　llllllll
+　　　,,llllllllll,,,, 　 ,,llllllllllll,,,, 　 　 　 　 ,lllllllll,,,,,,,,,,,, 　 llllllll　 lllllll
+　　,,lllllllllllllllllllll,,lllllllll'''lllllllllll,,, 　 　 ,,llllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+　lllllllllll'' 　 '''''''lllllll''　　 ''lllll''　　　'lllllllllllllll　lllllllll'''''''llllllll''''llllllll''''''''
+,,,,,lllllll,,,,,,,,,,,,,,,lllllllll,,,,,,,,,,,,,,,,,,,,,,,,,,,　　 ''''llllllll 　llllllll 　 llllllll　lllllllll
+lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll 　 　 lllllllll,,,,lllllllll　,,llllllll'　 lllllll
+　 　 　 　 　 lllllllll 　　　　 　　　 　 　llllllllllllllllllllll,llllllllll'' 　 lllllll
+　 　 　 　 　 lllllllll　　 　　 　 　　　 　'llllllll　 ,,,llllllllllll'' 　 　lllllll
+　 　 　 　 　 lllllllll　　　　　　　　　　　　 　 　''lllll''''　　　　'lllllll'
+
+
+　　 　　 　 　 　 　 　 llllll,,,,,, 　 　　 ,,,,
+　,,,,,,,lllllllllllllllll,, 　 　 ,,,　　 '' 　 　　 llll　　　　 'llll,,
+''''''''' 　 　 　 'llll 　　,lll　 　 　 　　　llll　 　 　　 ''lll,
+　　　 　　　　,lll' 　　lll,,,,llll''''''llll,,　　llll　　　　　　'llll,
+　 　　 　,,,,,,,,lll''　 　llll'''　　 　 llll 　 llll 　,lll　 　　 ''''
+　　　'l''''''''''''　　　 　 　,,,,,,,,,,,,llll' 　　 'lllllll''
+　 　 　 　 　 　 　 　 　 ''''''''''
+
+
+-->
+
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
+    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
+        var tsurasa_count = 0;
+        var shinitai_count = 0;
+        var yokou_date = new Date(2015, 1, 23, 17, 0, 0, 0);
+        var happyou_date = new Date(2015, 1, 27, 8, 50, 0, 0);
+        Date.prototype.countDownString = function () {
+            var diff = this - (new Date());
+            if (diff < 0) return "0";
+            else {
+                var ms = ((diff) % 1000) >> 0;
+                var s = ((diff / 1000) % 60) >> 0;
+                var m = ((diff / 1000 / 60) % 60) >> 0;
+                var h = ((diff / 1000 / 60 / 60) % 24) >> 0;
+                var d = ((diff / 1000 / 60 / 60 / 24)) >> 0;
+                return "" + d + "日" + h + "時間" + m + "分" + s + "秒" + ms;
+            }
+        };
+
         var server = "localhost:8080";
         var socket = io.connect(server);
 
         var sugoku = function () {
             socket.emit("sugoku", {});
+            $("div").append("<button onclick=\"sugoku()\">すごくつらい</button>");
         }
         socket.on("tsurai", function (tsurai) {
-            console.log(tsurai);
-            //tsurai is count
+            tsurasa_count = tsurai;
+            $("div").append("<button onclick=\"sugoku()\">おれもつらい</button>");
         });
         socket.on("shinitai", function (shinitai) {
-            console.log(shinitai);
-            //shinitai is count
+            shinitai_count = shinitai;
+            $("div").append("<button onclick=\"sugoku()\">わたしつらい</button>");
         });
 
         var mou = function () {
-            socket.emit("mou", { yokou: "owattenai", happyou: "dekinai", tsurasa: "yabai", shinitai:"tasukete" });
+            socket.emit("mou", { yokou: "owattenai", happyou: "dekinai", tsurasa: "yabai", shinitai: "tasukete" });
         };
-        socket.on("yada", function (tsurai) {
-            console.log(tsurai);
-            //tsurai is count
+        socket.on("yada", function (naiteru) {
+            tsurasa_count = naiteru.tsurasa;
+            shinitai_count = naiteru.shinitai;
         });
 
         socket.on("connect", function (data) {
-            mou();
+            mou();// yada
         });
+
+        ///////////////////////////////////////////////////////////////////////////////
+        setInterval(function () {
+            $("#yokou").text(yokou_date.countDownString());
+            $("#happyou").text(happyou_date.countDownString());
+            $("#tsurasugi").text("" + tsurasa_count + "つらい");
+            $("#shinitai").text("この瞬間にも" + shinitai_count + "人もの人が、つらいと叫んでいるんだ。");
+        }, 10);
+
     </script>
     <title>卒研つらい</title>
 </head>
 <body>
-
+    <div id="content">
+        <h1>卒研つらい</h1>
+        <br />
+        <h2>予稿提出まであと</h2><h1 id="yokou"></h1><h2>しかない。</h2>
+        <br />
+        <h2>卒研発表まであと</h2><h1 id="happyou"></h1><h2>しかない。</h2>
+        <br />
+        <h1 id="tsurasugi"></h1>
+        <button onclick="sugoku()">つらい</button>
+        <h3 id="shinitai"></h3>
+    </div>
 </body>
 </html>
