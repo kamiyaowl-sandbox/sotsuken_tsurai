@@ -1,0 +1,10 @@
+{
+  "name": "sotsuken_tsurai",
+  "version": "0.0.0",
+  "description": "sotsuken_tsurai",
+  "main": "app.js",
+  "author": {
+    "name": "kamiya",
+    "email": ""
+  }
+}
