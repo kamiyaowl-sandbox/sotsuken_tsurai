@@ -3,7 +3,36 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        var server = "localhost:8080";
+        var socket = io.connect(server);
+
+        var sugoku = function () {
+            socket.emit("sugoku", {});
+        }
+        socket.on("tsurai", function (tsurai) {
+            console.log(tsurai);
+            //tsurai is count
+        });
+        socket.on("shinitai", function (shinitai) {
+            console.log(shinitai);
+            //shinitai is count
+        });
+
+        var mou = function () {
+            socket.emit("mou", { yokou: "owattenai", happyou: "dekinai", tsurasa: "yabai", shinitai:"tasukete" });
+        };
+        socket.on("yada", function (tsurai) {
+            console.log(tsurai);
+            //tsurai is count
+        });
+
+        socket.on("connect", function (data) {
+            mou();
+        });
+    </script>
+    <title>卒研つらい</title>
 </head>
 <body>
 
